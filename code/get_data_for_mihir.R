@@ -18,6 +18,11 @@ write.csv(office_mex, file=file.path(datadir, "mexico_fishery_office_key.csv"), 
 write.csv(spp_mex, file=file.path(datadir, "mexico_species_key.csv"), row.names = F)
 
 
+# Export data as RDS files
+saveRDS(data_mex, file=file.path(datadir, "2001_2020_mexico_landings_datamares.Rds"))
+saveRDS(office_mex, file=file.path(datadir, "mexico_fishery_office_key.csv"))
+saveRDS(spp_mex, file=file.path(datadir, "mexico_species_key.csv"))
+
 # California data
 ###########################################################
 
@@ -32,4 +37,16 @@ write.csv(cdfw_ports, file=file.path(datadir, "1941_2020_ca_landings_cdfw.csv"),
 write.csv(pacfin_all6, file=file.path(datadir, "1980_2020_wa_or_ca_landings_pacfin.csv"), row.names = F)
 write.csv(cdfw_ports_key, file=file.path(datadir, "cdfw_ports_key.csv"), row.names = F)
 write.csv(pacfin_ports, file=file.path(datadir, "pacfin_ports_key.csv"), row.names = F)
+
+# Export data as RDS files
+saveRDS(cdfw_ports, file=file.path(datadir, "1941_2020_ca_landings_cdfw.Rds"))
+saveRDS(pacfin_all6, file=file.path(datadir, "1980_2020_wa_or_ca_landings_pacfin.Rds"))
+saveRDS(cdfw_ports_key, file=file.path(datadir, "cdfw_ports_key.Rds"))
+saveRDS(pacfin_ports, file=file.path(datadir, "pacfin_ports_key.Rds"))
+
+
+
+
+
+
 
