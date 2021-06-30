@@ -83,11 +83,17 @@ ggplot(results, mapping=aes(y=port_complex, x=value_usd_avg/1e6, fill=port)) +
   theme(legend.position = "none")
 
 # Plot data
-ggplot(results, mapping=aes(y=port, x=value_usd_avg/1e6)) +
+g <- ggplot(results, mapping=aes(y=port, x=value_usd_avg/1e6)) +
   facet_grid(port_complex~., scales="free_y", space="free_y") +
   geom_bar(stat="identity") +
   labs(title="Port-based revenue", y="Port complex", x="Value in dollars") +
-  theme(legend.position = "none")
+  theme(legend.position = "none",
+        axis.text=element_text(size=6),
+        strip.text = element_text(size=7))
+
+# Export plot as a PNG
+ggsave(g, filename=file.path(plotdir, "CA_port_revenues_2010_2020_avg.png"),
+       units="in", width=6.5, height=8.0, dpi=600)
 
 
 
