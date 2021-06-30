@@ -9,10 +9,6 @@ plotdir <- "figures"
 tabledir <- "tables"
 
 # Read data
-<<<<<<< HEAD
-data_orig <- read.csv("E:/Important/RMP/Code/wc_landing_shifts/data/1941_2020_ca_landings_cdfw.csv")
-=======
-list.files(datadir)
 data_orig <- read.csv(file.path(datadir, "1941_2020_ca_landings_cdfw.csv"), as.is=T)
 data_orig <- readRDS(file.path(datadir, "1941_2020_ca_landings_cdfw.Rds"))
 
@@ -33,7 +29,6 @@ min(data_orig$year)
 max(data_orig$year)
 summary(data_orig$year)
 boxplot(data_orig$year)
->>>>>>> 267900c77f745648664e68971cc8fef39e3d9ada
 
 # Inspect categorical columns
 unique(data_orig$port_complex)
