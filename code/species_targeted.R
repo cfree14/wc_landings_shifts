@@ -24,7 +24,7 @@ years <- 2001:2019
 data <- mexicoLandings %>%
   # Eliminate Columns and Years #
   filter(year %in% years) %>%
-  filter(fishery_type != "Artisinal") %>%
+  filter(fishery_type == "Artisinal") %>%
   filter(level != "species") %>%
   select(year, fishery_type, sci_name, level, landings_kg, value_mxn) %>%
   # Group by Fishery Type and Sort #
