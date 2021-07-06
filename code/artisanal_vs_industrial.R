@@ -48,11 +48,11 @@ ggsave(g1, filename=file.path(plotdir, "artisanal_vs_industrial_value.png"),
        units="in", width=6.5, height=8.0, dpi=600)
 
   # Quantity Graph #
-g2 <- ggplot(data, mapping = aes(x = year, y = landings_kg_tot/10e9, color = fishery_type)) +
+g2 <- ggplot(data, mapping = aes(x = year, y = landings_kg_tot/10e6, color = fishery_type)) +
   geom_line(size = 1.5, alpha = 0.6) +
   labs(title = "Fishery Landing Amounts Over Time",
        subtitle = "How do artisanal and industrial fishery landings differ?",
-       x ="Year", y = "Value in Megatons", color = "Fishery Type") +
+       x ="Year", y = "Value in Megatons..", color = "Fishery Type") +
   theme_fivethirtyeight() +
   theme(axis.title = element_text(), text = element_text(size = 14, family = "Segoe UI"))
 
