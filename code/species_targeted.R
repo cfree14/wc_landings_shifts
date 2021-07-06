@@ -13,7 +13,7 @@ plotDir <- "figures"
 tableDir <- "tables"
 
 # Read File #
-mexicoLandings = readRDS(file.path(datadir, "2001_2020_mexico_landings_datamares.Rds"))
+mexicoLandings = readRDS(file.path(dataDir, "2001_2020_mexico_landings_datamares.Rds"))
 
 # Inspect Data #
 view(mexicoLandings)
@@ -24,7 +24,7 @@ years <- 2001:2019
 data <- mexicoLandings %>%
   # Eliminate Columns and Years #
   filter(year %in% years) %>%
-  filter(fishery_type != "Artisinal") %>%
+  filter(fishery_type == "Artisinal") %>%
   filter(level != "species") %>%
   select(year, fishery_type, sci_name, level, landings_kg, value_mxn) %>%
   # Group by Fishery Type and Sort #
