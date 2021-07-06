@@ -21,8 +21,8 @@ write.csv(spp_mex, file=file.path(datadir, "mexico_species_key.csv"), row.names 
 
 # Export data as RDS files
 saveRDS(data_mex, file=file.path(datadir, "2001_2020_mexico_landings_datamares.Rds"))
-saveRDS(office_mex, file=file.path(datadir, "mexico_fishery_office_key.csv"))
-saveRDS(spp_mex, file=file.path(datadir, "mexico_species_key.csv"))
+saveRDS(office_mex, file=file.path(datadir, "mexico_fishery_office_key.Rds"))
+saveRDS(spp_mex, file=file.path(datadir, "mexico_species_key.Rds"))
 
 # California data
 ###########################################################

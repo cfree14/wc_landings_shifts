@@ -13,7 +13,7 @@ plotDir <- "figures"
 tableDir <- "tables"
 
 # Read File #
-mexicoLandings = readRDS(file.path(datadir, "2001_2020_mexico_landings_datamares.Rds"))
+mexicoLandings = readRDS(file.path(dataDir, "2001_2020_mexico_landings_datamares.Rds"))
 
 # Inspect Data #
 view(mexicoLandings)
