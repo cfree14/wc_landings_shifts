@@ -57,7 +57,7 @@ gart <- ggplot(data = artdata, aes(x = year, y = landings_kg_tot / 1000, fill = 
   geom_col() +
   labs(title = "Species Targeted by Artisanal Fisheries",
        subtitle = "What are the top five species targeted annually by artisanal fisheries based on landings?",
-       x ="Year", y = "Landings (Metric Tons)", fill = "Scientific Name") +
+       x ="Year", y = "Landings Volume (1000s of metric tons)", fill = "Scientific Name") +
   theme_fivethirtyeight() +
   theme(axis.title = element_text(), text = element_text(size = 10, family = "Segoe UI"))
   # Save #
@@ -69,7 +69,7 @@ gind <- ggplot(data = inddata, aes(x = year, y = landings_kg_tot / 1000, fill = 
   geom_col() +
   labs(title = "Species Targeted by Industrial Fisheries",
        subtitle = "What are the top five species targeted annually by industrial fisheries based on landings?",
-       x ="Year", y = "Landings (Metric Tons)", fill = "Scientific Name") +
+       x ="Year", y = "Landings Volume (1000s of metric tons)", fill = "Scientific Name") +
   theme_fivethirtyeight() +
   theme(axis.title = element_text(), text = element_text(size = 10, family = "Segoe UI"))
 

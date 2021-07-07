@@ -57,7 +57,7 @@ gart <- ggplot(data = artdata, aes(x = year, y = value_mxn_tot / 10e6, fill = sc
   geom_col() +
   labs(title = "Species Targeted by Artisanal Fisheries",
        subtitle = "What are the top five species targeted annually by artisanal fisheries based on revenue?",
-       x ="Year", y = "Value in Pesos (Nillions)", fill = "Scientific Name") +
+       x ="Year", y = "Landings Value (Millions of pesos)", fill = "Scientific Name") +
   theme_fivethirtyeight() +
   theme(axis.title = element_text(), text = element_text(size = 10, family = "Segoe UI"))
 # Save #
@@ -69,7 +69,7 @@ gind <- ggplot(data = inddata, aes(x = year, y = value_mxn_tot / 10e6, fill = sc
   geom_col() +
   labs(title = "Species Targeted by Industrial Fisheries",
        subtitle = "What are the top five species targeted annually by industrial fisheries based on revenue?",
-       x ="Year", y = "Value in Pesos (Millions)", fill = "Scientific Name") +
+       x ="Year", y = "Landings Value (Millions of pesos)", fill = "Scientific Name") +
   theme_fivethirtyeight() +
   theme(axis.title = element_text(), text = element_text(size = 10, family = "Segoe UI"))
 
