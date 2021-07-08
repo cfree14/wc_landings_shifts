@@ -3,7 +3,6 @@ library(rnaturalearth)
 library(rnaturalearthdata)
 library(rnaturalearthhires)
 library(rgeos)
-library(leaflet)
 library(ggthemes)
 library(extrafont)
 library(extrafontdb)
@@ -39,40 +38,30 @@ ggplot(mexico) +
 # Data Build #
 locdata <- data %>%
   select(year, state, office, fishery_type, landings_kg, value_mxn, lat_dd, long_dd) %>%
-  filter(year %in% years) %>%
-  filter(fishery_type == "Artisanal") %>%
-  group_by(year, state, office, lat_dd, long_dd) %>%
+  #filter(year %in% years) %>%
+  filter(fishery_type != "Unknown") %>%
+  group_by(year, state, office, fishery_type, lat_dd, long_dd) %>%
   summarize(landings_kg_tot = sum(landings_kg),
             value_mxn_tot=sum(value_mxn)) %>%
   ungroup()
   # Sort by Most Productive #
   locdata <- locdata[order(-locdata$landings_kg_tot),] %>%
-  # Filter Top Fisheries #
-  slice(1:10)
 
-  locdata1 <- data %>%
-    select(year, state, office, fishery_type, landings_kg, value_mxn, lat_dd, long_dd) %>%
-    filter(year %in% years) %>%
-    filter(fishery_type == "Artisanal") %>%
-    group_by(year, state, office, lat_dd, long_dd) %>%
-    summarize(landings_kg_tot = sum(landings_kg),
-              value_mxn_tot=sum(value_mxn)) %>%
-    ungroup()
-  # Sort by Most Productive #
-  locdata1 <- locdata1[order(-locdata1$landings_kg_tot),] %>%
-    # Filter Top Fisheries #
-    slice(1:10)
+view(locdata1)
 
-  view(locdata1)
-
-  ggplot() +
-    geom_sf(data=mexico, color="white", fill="grey80", lwd=0.4) +
-    geom_point(data=locdata1, mapping=aes(x=long_dd, y=lat_dd, color=state), alpha=0.5, size=5) +
-    labs(title="Mexican fishery office locations", x="Longitude", y="Latitude") +
-    scale_color_discrete(name="State") +
-    theme_bw()
-    theme(axis.text.y = element_text(angle = 90, hjust = 0.5))
-
+# Plot Map #
+gmap <- ggplot() +
+  geom_sf(data = mexico, color = "white", fill="grey80", lwd = 0.4) +
+  geom_point(data = locdata, mapping = aes(x = long_dd, y = lat_dd, color = fishery_type), alpha = 0.5, size = 5) +
+  scale_color_manual(values = c('Artisanal', 'Industrial'))+
+  labs(title="Mexican Fishery Locations", subtitles = "Where are artisanal and industrial fisheries located in Mexico?",
+       x="Longitude", y="Latitude") +
+  scale_color_discrete(name="Fishery Type") +
+  theme_fivethirtyeight() +
+  theme(axis.text.y = element_text(angle = 90, hjust = 0.5), text = element_text(size = 14, family = "Segoe UI"))
+  # Save #
+  ggsave(gmap, filename=file.path(plotdir, "fishery_map.png"),
+       units="in", width=10, height=8.0, dpi=600)
 
 
 
