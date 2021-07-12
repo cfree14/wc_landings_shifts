@@ -6,7 +6,7 @@ library(rnaturalearth)
 datadir <- "data"
 plotdir <- "figures"
 codedir <- "code"
-
+years <- 2001:2019
 # Import theme
 source(file.path(codedir, "my_theme.R"))
 
@@ -64,14 +64,15 @@ top10_spp <- data %>%
 
 # Let's look at sardine: Sardinops sagax
 sardine_data <- data %>%
-  filter(sci_name=="Sardinops sagax" & prod_type=="Capture") %>%
+  filter(sci_name=="Penaeidae" & prod_type=="Capture") %>%
+  filter(year %in% years) %>%
   group_by(year, office, lat_dd) %>%
   summarize(landings_mt=sum(landings_kg)/1000) %>%
   ungroup() %>%
   group_by(year) %>%
   summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_mt)) %>%
   ungroup() %>%
-  filter(year!=2020)
+  filter(year!=2001)
 
 ggplot(sardine_data, aes(x=year, y=lat_dd)) +
   geom_line()
