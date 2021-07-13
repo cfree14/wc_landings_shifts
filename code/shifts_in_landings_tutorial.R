@@ -74,6 +74,8 @@ sardine_data <- data %>%
   ungroup() %>%
   filter(year!=2001)
 
+view(sardine_data)
+
 ggplot(sardine_data, aes(x=year, y=lat_dd)) +
   geom_line()
 

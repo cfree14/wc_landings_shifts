@@ -21,7 +21,7 @@ mexdata <- readRDS(file.path(datadir, "2001_2020_mexico_landings_datamares.Rds")
 officedata <- readRDS(file.path(datadir, "mexico_fishery_office_key.Rds"))
 
 view(officedata)
-years <- 2019
+years <- 2001:2019
 
 # Format Data #
 data <- mexdata %>%
