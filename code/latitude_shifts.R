@@ -41,10 +41,10 @@ filter(year %in% years) %>%
   #Need to distinguish by fishery type #
 select(year, sci_name, office, landings_kg, value_mxn, lat_dd) %>%
 group_by(year, sci_name, lat_dd) %>%
-summarize(landings_mt=sum(landings_kg)/1000, value_mxn_sum = sum(value_mxn)) %>%
+summarize(landings_mt=sum(landings_kg)/1000, value_mxn_sum = sum(value_mxn)/1000) %>%
 ungroup() %>%
 group_by(year) %>%
-summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_mt), landings_mt_tot = sum(landings_mt), value_mxn_tot = sum(value_mxn_sum)) %>%
+summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_mt), landings_mt_tot = sum(landings_mt)/1000, value_mxn_tot = sum(value_mxn_sum)/1000) %>%
 ungroup()
 
 view(latdata)
@@ -57,21 +57,22 @@ g1 <- ggplot(latdata, aes(x = year, y = lat_dd)) +
     axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
   labs(title = "Penaeidae Landings, Revenues, and Latitudes over time.",
        subtitle = "How do Penaeidae statistics vary over time?",
-       y = "Mean Latitude")
+       y = "Mean Latitude (°N)")
 
 g2 <- ggplot(latdata, aes(x = year, y = landings_mt_tot)) +
 geom_line() +
   theme(axis.title.x = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
-  labs(y = "Landings in Megatons")
+  labs(y = "Volume (Megatons)")
 
 g3 <- ggplot(latdata, aes(x = year, y = value_mxn_tot)) +
 geom_line() +
   theme(axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
-  labs(x = "Year", y = "Value in Pesos (Millions)")
+  labs(x = "Year", y = "Value (Millions of Pesos)") +
+  scale_x_continuous(breaks=seq(2000, 2020, 5), lim=c(2000, 2020))
 
-grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
+g <- grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
 
 ggsave(g, filename=file.path(plotdir, "sample_correlation.png"),
        units="in", width=6.5, height=8.0, dpi=600)
