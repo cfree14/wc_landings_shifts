@@ -33,7 +33,12 @@ years <- 2001:2019
 # Build Data #
 latdata <- data %>%
 filter(year %in% years) %>%
-filter(sci_name == "Penaeidae") %>%
+  # Choose Species and Fishery Type#
+  filter(sci_name == "Penaeidae") %>%
+  filter(fishery_type == "Artisanal") %>%
+
+# Calculate
+  #Need to distinguish by fishery type #
 select(year, sci_name, office, landings_kg, value_mxn, lat_dd) %>%
 group_by(year, sci_name, lat_dd) %>%
 summarize(landings_mt=sum(landings_kg)/1000, value_mxn_sum = sum(value_mxn)) %>%
@@ -66,7 +71,7 @@ geom_line() +
   theme(axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
   labs(x = "Year", y = "Value in Pesos (Millions)")
 
-g <- grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
+grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
 
 ggsave(g, filename=file.path(plotdir, "sample_correlation.png"),
        units="in", width=6.5, height=8.0, dpi=600)
