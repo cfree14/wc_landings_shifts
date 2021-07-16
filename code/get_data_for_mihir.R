@@ -5,6 +5,7 @@
 # Directories
 datadir <- "data"
 plotdir <- "figures"
+codedir <- "code"
 
 # Read data
 mexdir <- "/Users/cfree/Dropbox/Chris/UCSB/projects/wc_cc_synthesis/data/landings/mexico/datamares/confidential/processed/"

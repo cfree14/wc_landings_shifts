@@ -12,17 +12,17 @@ loadfonts(device = "win")
 
 # Data Import #
 # Directories #
-  dataDir <- "data"
-  plotDir <- "figures"
-  tableDir <- "tables"
+  datadir <- "data"
+  plotdir <- "figures"
+  tabledir <- "tables"
 
 # Read File #
 mexdata <- readRDS(file.path(datadir, "2001_2020_mexico_landings_datamares.Rds"))
-officedata <- readRDS(file.path(datadir, "mexico_fishery_office_key.Rds"))
+office_key <- readRDS(file.path(datadir, "mexico_fishery_office_key.Rds"))
 spp_key <- readRDS(file.path(datadir, "mexico_species_key.Rds"))
 
 # Join Data #
-data <- data_orig %>%
+data <- mexdata %>%
   # Add Location and Family #
   left_join(office_key, by=c("state", "office")) %>%
   left_join(spp_key %>% select(comm_name_orig, family))
@@ -33,9 +33,9 @@ years <- 2001:2019
 # Build Data #
 latdata <- data %>%
 filter(year %in% years) %>%
-  # Choose Species and Fishery Type#
-  filter(sci_name == "Penaeidae") %>%
-  filter(fishery_type == "Artisanal") %>%
+  # Choose Species and Fishery Type #
+filter(sci_name == "Penaeidae") %>%
+
 
 # Calculate
   #Need to distinguish by fishery type #
@@ -52,6 +52,7 @@ view(latdata)
 # Generate Graphs #
 g1 <- ggplot(latdata, aes(x = year, y = lat_dd)) +
   geom_line() +
+  geom_smooth(method = "lm") +
   theme(axis.title.x = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
@@ -61,6 +62,7 @@ g1 <- ggplot(latdata, aes(x = year, y = lat_dd)) +
 
 g2 <- ggplot(latdata, aes(x = year, y = landings_mt_tot)) +
 geom_line() +
+  geom_smooth(method = "lm") +
   theme(axis.title.x = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
@@ -68,11 +70,12 @@ geom_line() +
 
 g3 <- ggplot(latdata, aes(x = year, y = value_mxn_tot)) +
 geom_line() +
+  geom_smooth(method = "lm") +
   theme(axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
   labs(x = "Year", y = "Value (Millions of Pesos)") +
   scale_x_continuous(breaks=seq(2000, 2020, 5), lim=c(2000, 2020))
 
-g <- grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
+grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
 
 ggsave(g, filename=file.path(plotdir, "sample_correlation.png"),
        units="in", width=6.5, height=8.0, dpi=600)

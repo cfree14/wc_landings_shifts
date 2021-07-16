@@ -56,7 +56,7 @@ data <- data_orig %>%
   # Add family
   left_join(spp_key %>% select(comm_name_orig, family))
 
-
+view(data)
 # Analyze data
 ##################################################
 
@@ -92,15 +92,15 @@ ggplot(sardine_data, aes(x=year, y=lat_dd)) +
 # Build dataset
 sdata <- data %>%
   # Filter to species, region, and years of interest
-  filter(sci_name=="Sardinops sagax" & prod_type=="Capture") %>%
+  filter(sci_name=="Penaeidae" & prod_type=="Capture") %>%
   filter(year %in% years) %>%
   # Calculate total annual revenues by office
   group_by(year, office, ecoregion, lat_dd) %>%
-  summarize(value_mxn=sum(value_mxn)) %>%
+  summarize(value_mxn=sum(value_mxn), landings_kg = sum(landings_kg)) %>%
   ungroup() %>%
   # Calculate revenue-weighted average latitude
   group_by(year) %>%
-  summarize(lat_dd=weighted.mean(x=lat_dd, w=value_mxn)) %>%
+  summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_kg)) %>%
   ungroup()
 
 # Plot raw data
@@ -111,7 +111,7 @@ g <- ggplot(sdata, aes(x=year, y=lat_dd)) +
 g
 
 # Plot data with linear regression fit
-g <- ggplot(sdata, aes(x=year, y=lat_dd)) +
+g1 <- ggplot(sdata, aes(x=year, y=lat_dd)) +
   geom_line() +
   geom_smooth(method="lm", color="red", fill="grey80") +
   labs(x="Year", y='Latitude (°N)') +
@@ -138,12 +138,12 @@ pvalue <- summary(lmfit)$coefficients[2,4]
 # Now, add SST to the dataframe and see the correlation with SST
 sdata2 <- sdata %>%
   # Assign ecoregion
-  mutate(ecoregion="Mexican Tropical Pacific") %>%
+  mutate(ecoregion="Southern California Bight", ecoregion="Cortezian",ecoregion="Magdalena Transition") %>%
   # Add SST for that ecoregion
   left_join(sst, by=c("ecoregion", "year"))
 
 # Plot the relationship between lat and SST
-g <- ggplot(sdata2, aes(x=sst_c, y=lat_dd)) +
+g2 <- ggplot(sdata2, aes(x=sst_c, y=lat_dd)) +
   geom_point() +
   geom_smooth(method="lm") +
   labs(x="SST (°C)", y="Latitude (°N)") +
@@ -162,7 +162,7 @@ summary(lmfit)
 # year, lat, volume, sst
 sdata3 <- data %>%
   # Filter to species, region, and years of interest
-  filter(sci_name=="Sardinops sagax" & prod_type=="Capture") %>%
+  filter(sci_name=="Penaeidae" & prod_type=="Capture") %>%
   filter(year %in% years) %>%
   # Calculate total annual revenues by office
   group_by(year, office, ecoregion, lat_dd) %>%
@@ -171,22 +171,23 @@ sdata3 <- data %>%
   ungroup() %>%
   # Calculate revenue-weighted average latitude
   group_by(year) %>%
-  summarize(lat_dd=weighted.mean(x=lat_dd, w=value_mxn),
+  summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_kg),
             landings_kg=sum(landings_kg)) %>%
   ungroup() %>%
   # Assign ecoregion
-  mutate(ecoregion="Southern California Bight") %>%
+  mutate(ecoregion="Southern California Bight", ecoregion="Cortezian",ecoregion="Magdalena Transition") %>%
   # Add SST for that ecoregion
   left_join(sst, by=c("ecoregion", "year"))
 
 
-g <- ggplot(sdata3, aes(x=lat_dd, y=landings_kg/1000/1000, col=sst_c)) +
+g1 <- ggplot(sdata3, aes(x=lat_dd, y=landings_kg/1000/1000)) +
   geom_point() +
   geom_smooth(method="lm") +
   labs(x="Landings-weighted latitude (°N)", y="Landings (1000s mt)") +
-  scale_color_gradientn(name="SST", colors=rev(RColorBrewer::brewer.pal(9, "RdYlBu"))) +
   theme_bw()
-g
+g1
+
+grid.arrange(g1, g2, ncol = 2, heights = c(3, 3))
 
 lmfit <- lm(landings_kg ~ lat_dd, sdata3)
 summary(lmfit)
