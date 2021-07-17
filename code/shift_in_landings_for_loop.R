@@ -1,5 +1,6 @@
 
 # Packages
+library(tidyverse)
 library(rnaturalearth)
 
 # Directories
@@ -22,6 +23,7 @@ spp_key <- readRDS(file.path(datadir, "mexico_species_key.Rds"))
 # Read SST by ecoregion
 sst <- read.csv(file.path(sstdir, "COBE_1891_2020_sst_by_ecoregion.csv"))
 
+view(sst)
 # Parameters
 years <- 2001:2019
 
@@ -36,8 +38,7 @@ data <- data_orig %>%
   # Add family
   left_join(spp_key %>% select(comm_name_orig, family))
 
-
-
+view(data)
 # Build data
 ################################################################################
 
@@ -54,11 +55,18 @@ fishery_key <- data %>%
   # Add columns to record stats
   mutate(slope=NA,
          r2=NA,
-         pval=NA)
+         pval=NA,
+         r2_sst_latitude=NA,
+         r2_latitude_landings=NA)
 
+view(fishery_key)
 i <- 1
+#landings exceptions - i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 267 || i == 305 || i == 306
 for(i in 1:nrow(fishery_key)){
-
+if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 182 || i == 267 || i == 305 || i == 306)
+{
+  i <- i + 1
+}
   # Which fishery and which species are we currently doing
   print(i)
   fishery_do <- fishery_key$fishery_type[i]
@@ -69,67 +77,76 @@ for(i in 1:nrow(fishery_key)){
     # Filter to years of interest
     filter(prod_type=="Capture" & sci_name==spp_do & fishery_type==fishery_do) %>%
     filter(year %in% years) %>%
-    # Calculatate annual landings office
+    # Calculate annual landings office
     group_by(year, office, lat_dd) %>%
-    summarize(landings_mt=sum(landings_kg)/1000) %>%
+    summarize(landings_mt=sum(landings_kg)/1000, value_mxn_1=sum(value_mxn)) %>%
     ungroup() %>%
-    # Calculate landings weighted latitud
+    # Calculate landings weighted latitude
     group_by(year) %>%
-    summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_mt)) %>%
+    summarize(lat_dd=weighted.mean(x=lat_dd, w=value_mxn_1), landings_mt = sum(landings_mt), value_mxn_2=sum(value_mxn_1)) %>%
     ungroup() %>%
     # Classify starting ecoregion
-    mutate(lat01=lat_dd[year==2001],
+    mutate(lat01 = lat_dd,
            ecoregion=cut(lat01,
-                         breaks=c(10, 15, 22, 26, 30),
-                         labels=c("Chiapas-Nicaragua", "Mexican Tropical Pacific",
-                                  "Magdalena Transition", "Southern California Bight"))) %>%
+                        breaks=c(9.5, 13, 21.5, 2, 30),
+                        labels=c("Chiapas-Nicaragua", "Mexican Tropical Pacific",
+                                 "Magdalena Transition", "Southern California Bight"))) %>%
     # Add SST data
     left_join(sst, by=c("year", "ecoregion"))
 
-  # Plot data with linear regression fit
-  if(F){
-    title_label <- paste(fishery_do, spp_do)
-    g <- ggplot(sdata, aes(x=year, y=lat_dd)) +
-      geom_line() +
-      geom_smooth(method="lm", color="red", fill="grey80") +
-      labs(x="Year", y='Latitude (°N)', title=title_label) +
-      theme_bw()
-    g
-    print(g)
-  }
+
+   # g2 <- ggplot(sdata, aes(x=lat_dd, y=landings_mt)) +
+    #  geom_line() +
+    #  geom_smooth(method="lm", color="red", fill="grey80") +
+    #  labs(x="Year", y='Latitude (°N)', title=title_label) +
+     # theme_bw()
+    #  g2
+     # print(g2)
 
   # Fit a linear regression using the lm()
-  lmfit <- lm(lat_dd~year, sdata)
+  lmfit1 <- lm(lat_dd~year, sdata)
+  lmfit2 <- lm(sst_c~lat_dd, sdata)
+  lmfit3 <- lm(lat_dd~value_mxn_2, sdata)
   # summary(lmfit)
 
-  # Extract importnat statisitcs
-  slope <- coef(lmfit)[2]
-  r2 <- summary(lmfit)$r.squared
-  pvalue <- summary(lmfit)$coefficients[2,4]
+  # Extract important statistics
+  slope <- coef(lmfit1)[2]
+  r2 <- summary(lmfit1)$r.squared
+  pvalue <- summary(lmfit1)$coefficients[2,4]
+  r2_sst_latitude <- summary(lmfit2)$r.squared
+  r2_latitude_landings <- summary(lmfit3)$r.squared
 
   # Record the statistics in the container
   fishery_key$slope[i] <- slope
   fishery_key$r2[i] <- r2
   fishery_key$pval[i] <- pvalue
-
+  fishery_key$r2_sst_latitude[i] <- r2_sst_latitude
+  fishery_key$r2_latitude_landings[i] <- r2_latitude_landings
 }
 
-
+view(fishery_key)
 # Visualize the results
-g <- ggplot(fishery_key %>% filter(pval<=0.05), aes(x=fishery_type, y=slope)) +
+g1 <- ggplot(fishery_key %>% filter(pval<=0.05), aes(x=fishery_type, y=slope)) +
   geom_boxplot() +
   geom_hline(yintercept = 0) +
   theme_bw()
-g
+g1
+ggsave(g1, filename=file.path(plotdir, "slope_boxplot.png"),
+       units="in", width=6.5, height=8.0, dpi=600)
 
+g2 <- ggplot(fishery_key, aes(x=fishery_type, y=r2_sst_latitude)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+g2
+ggsave(g2, filename=file.path(plotdir, "sst_latitude_boxplot.png"),
+       units="in", width=6.5, height=8.0, dpi=600)
 
-
-
-
-
-
-
-
-
-
+ggplot(fishery_key, aes(x=fishery_type, y=r2_latitude_landings)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+g3
+ggsave(g3, filename=file.path(plotdir, "latitude_landings_boxplot.png"),
+       units="in", width=6.5, height=8.0, dpi=600)
 

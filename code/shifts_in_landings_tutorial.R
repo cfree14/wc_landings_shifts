@@ -138,7 +138,7 @@ pvalue <- summary(lmfit)$coefficients[2,4]
 # Now, add SST to the dataframe and see the correlation with SST
 sdata2 <- sdata %>%
   # Assign ecoregion
-  mutate(ecoregion="Southern California Bight", ecoregion="Cortezian",ecoregion="Magdalena Transition") %>%
+  mutate(ecoregion="Southern California Bight") %>%
   # Add SST for that ecoregion
   left_join(sst, by=c("ecoregion", "year"))
 
@@ -162,7 +162,7 @@ summary(lmfit)
 # year, lat, volume, sst
 sdata3 <- data %>%
   # Filter to species, region, and years of interest
-  filter(sci_name=="Penaeidae" & prod_type=="Capture") %>%
+  filter(sci_name=="Selachimorpha") %>%
   filter(year %in% years) %>%
   # Calculate total annual revenues by office
   group_by(year, office, ecoregion, lat_dd) %>%
@@ -175,7 +175,7 @@ sdata3 <- data %>%
             landings_kg=sum(landings_kg)) %>%
   ungroup() %>%
   # Assign ecoregion
-  mutate(ecoregion="Southern California Bight", ecoregion="Cortezian",ecoregion="Magdalena Transition") %>%
+  mutate(ecoregion = "Southern California Bight") %>%
   # Add SST for that ecoregion
   left_join(sst, by=c("ecoregion", "year"))
 

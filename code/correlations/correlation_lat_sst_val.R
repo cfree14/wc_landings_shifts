@@ -23,6 +23,7 @@ officedata <- readRDS(file.path(datadir, "mexico_fishery_office_key_with_ecoregi
 spp_key <- readRDS(file.path(datadir, "mexico_species_key.Rds"))
 sst <- read.csv(file.path(sstdir, "COBE_1891_2020_sst_by_ecoregion.csv"))
 
+years <- 2001:2019
 # Join Data #
 data <- mexdata %>%
   # Add Location and Family #
@@ -31,7 +32,7 @@ data <- mexdata %>%
 
 sdata <- data %>%
   # Filter to species, region, and years of interest
-  filter(sci_name=="Opisthonema sp" & prod_type=="Capture") %>%
+  filter(sci_name == "Haemulon sp") %>%
   filter(year %in% years) %>%
   # Calculate total annual revenues by office
   group_by(year, office, ecoregion, lat_dd) %>%
@@ -45,15 +46,19 @@ sdata <- data %>%
   # Create SST Data #
   sdata2 <- sdata %>%
     # Assign Ecoregion #
-    mutate(ecoregion="Mexican Tropical Pacific") %>%
+    mutate(ecoregion="Southern California Bight") %>%
     # Add SST #
     left_join(sst, by=c("ecoregion", "year"))
 
   # Create Volume Data #
   sdata3 <- data %>%
     # Filter #
-    filter(sci_name=="Opisthonema sp" & prod_type=="Capture") %>%
-    filter(fishery_type == "Industrial") %>%
+    # Assign ecoregion
+    mutate(ecoregion="Southern California Bight") %>%
+    # Add SST for that ecoregion
+    left_join(sst, by=c("ecoregion", "year")) %>%
+    filter(prod_type=="Capture") %>%
+    filter(fishery_type == "Artisanal") %>%
     filter(year %in% years) %>%
     # Calculate total annual revenues by office
     group_by(year, office, ecoregion, lat_dd) %>%
@@ -64,14 +69,10 @@ sdata <- data %>%
     group_by(year) %>%
     summarize(lat_dd=weighted.mean(x=lat_dd, w=landings_kg),
               landings_kg=sum(landings_kg)) %>%
-    ungroup() %>%
-    # Assign ecoregion
-    mutate(ecoregion="Mexican Tropical Pacific") %>%
-    # Add SST for that ecoregion
-    left_join(sst, by=c("ecoregion", "year"))
+    ungroup()
 
-view(data)
-years <- 2001:2019
+
+
 
 # Plot Data #
   # SST and Mean Latitude #
@@ -90,7 +91,10 @@ years <- 2001:2019
   # Pearson Correlation #
 
 # Combine Graphs #
-  grid.arrange(g3, g4, ncol = 2, heights = c(3, 3))
+grid.arrange(g3, g4, ncol = 2, heights = c(3, 3))
+  ggsave(g5, filename=file.path(plotdir, "nematistius_pectoralis_artisanal_up_1.png"),
+         units="in", width=6.5, height=8.0, dpi=600)
+
 
   lmfit <- lm(landings_kg ~ lat_dd, sdata3)
   summary(lmfit)

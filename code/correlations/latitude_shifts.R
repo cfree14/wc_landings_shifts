@@ -34,7 +34,7 @@ years <- 2001:2019
 latdata <- data %>%
 filter(year %in% years) %>%
   # Choose Species and Fishery Type #
-filter(sci_name == "Penaeidae") %>%
+filter(sci_name == "Albula sp") %>%
 
 
 # Calculate
@@ -56,8 +56,8 @@ g1 <- ggplot(latdata, aes(x = year, y = lat_dd)) +
   theme(axis.title.x = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
-  labs(title = "Penaeidae Landings, Revenues, and Latitudes over time.",
-       subtitle = "How do Penaeidae statistics vary over time?",
+  labs(title = "Engraulidae Landings, Revenues, and Latitudes over time.",
+       subtitle = "How do Engraulidae statistics vary over time?",
        y = "Mean Latitude (°N)")
 
 g2 <- ggplot(latdata, aes(x = year, y = landings_mt_tot)) +
@@ -77,5 +77,5 @@ geom_line() +
 
 grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
 
-ggsave(g, filename=file.path(plotdir, "sample_correlation.png"),
+ggsave(g4, filename=file.path(plotdir, "engraulidae_industrial_up_2.png"),
        units="in", width=6.5, height=8.0, dpi=600)
