@@ -86,7 +86,7 @@ if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 18
     summarize(lat_dd=weighted.mean(x=lat_dd, w=value_mxn_1), landings_mt = sum(landings_mt), value_mxn_2=sum(value_mxn_1)) %>%
     ungroup() %>%
     # Classify starting ecoregion
-    mutate(lat01 = lat_dd,
+    mutate(lat01 = lat_dd[],
            ecoregion=cut(lat01,
                         breaks=c(9.5, 13, 21.5, 2, 30),
                         labels=c("Chiapas-Nicaragua", "Mexican Tropical Pacific",
