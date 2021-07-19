@@ -8,12 +8,12 @@ loadfonts(device = "win")
 
 # Data Import #
   # Directories #
-dataDir <- "data"
-plotDir <- "figures"
-tableDir <- "tables"
+datadir <- "data"
+plotdir <- "figures"
+tabledir <- "tables"
 
 # Read File #
-mexicoLandings = readRDS(file.path(dataDir, "2001_2020_mexico_landings_datamares.Rds"))
+mexicoLandings = readRDS(file.path(datadir, "2001_2020_mexico_landings_datamares.Rds"))
 
 # Inspect Data #
 view(mexicoLandings)
@@ -26,11 +26,11 @@ artdata <- mexicoLandings %>%
   filter(year %in% years) %>%
   filter(fishery_type == "Artisanal") %>%
   # filter(level != "species") %>%
-  select(year, fishery_type, sci_name, value_mxn) %>%
+ # select(year, fishery_type, sci_name, value_mxn) %>%
   # Group by Fishery Type and Sort #
-  group_by(year, sci_name) %>%
+  group_by(year, sci_name, office) %>%
   # Calculate Sums #
-  summarize(value_mxn_tot=sum(value_mxn))
+  summarize(value_mxn_tot=sum(value_mxn), landings_kg_tot = sum(landings_kg))
 # Pick Top Species #
 artdata <- artdata[order(-artdata$value_mxn_tot),] %>%
   slice(1:5)
@@ -60,6 +60,8 @@ gart <- ggplot(data = artdata, aes(x = year, y = value_mxn_tot / 10e6, fill = sc
        x ="Year", y = "Landings Value (Millions of pesos)", fill = "Scientific Name") +
   theme_fivethirtyeight() +
   theme(axis.title = element_text(), text = element_text(size = 10, family = "Segoe UI"))
+
+
 # Save #
 ggsave(gart, filename=file.path(plotdir, "artisanal_species_value.png"),
        units="in", width=10, height=8.0, dpi=600)
