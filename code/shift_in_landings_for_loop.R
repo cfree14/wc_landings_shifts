@@ -60,7 +60,7 @@ fishery_key <- data %>%
          r2_latitude_landings=NA)
 
 view(fishery_key)
-i <- 1
+i <- 18
 #landings exceptions - i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 267 || i == 305 || i == 306
 for(i in 1:nrow(fishery_key)){
 if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 182 || i == 267 || i == 305 || i == 306)
@@ -86,9 +86,9 @@ if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 18
     summarize(lat_dd=weighted.mean(x=lat_dd, w=value_mxn_1), landings_mt = sum(landings_mt), value_mxn_2=sum(value_mxn_1)) %>%
     ungroup() %>%
     # Classify starting ecoregion
-    mutate(lat01 = lat_dd,
+    mutate(lat01 = lat_dd[year==min(year)],
            ecoregion=cut(lat01,
-                        breaks=c(9.5, 13, 21.5, 2, 30),
+                        breaks=c(2, 9.5, 13, 21.5, 35),
                         labels=c("Chiapas-Nicaragua", "Mexican Tropical Pacific",
                                  "Magdalena Transition", "Southern California Bight"))) %>%
     # Add SST data
