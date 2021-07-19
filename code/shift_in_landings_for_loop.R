@@ -95,13 +95,13 @@ if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 18
     left_join(sst, by=c("year", "ecoregion"))
 
 
-   # g2 <- ggplot(sdata, aes(x=lat_dd, y=landings_mt)) +
-    #  geom_line() +
-    #  geom_smooth(method="lm", color="red", fill="grey80") +
-    #  labs(x="Year", y='Latitude (°N)', title=title_label) +
-     # theme_bw()
-    #  g2
-     # print(g2)
+   g2 <- ggplot(sdata, aes(x=lat_dd, y=landings_mt)) +
+    geom_line() +
+    geom_smooth(method="lm", color="#226462", fill="#226462", alpha=0.2) +
+    labs(x="Year", y='Latitude (°N)') +
+    theme_bw()
+   g2
+   print(g2)
 
   # Fit a linear regression using the lm()
   lmfit1 <- lm(lat_dd~year, sdata)
@@ -124,11 +124,19 @@ if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 18
   fishery_key$r2_latitude_landings[i] <- r2_latitude_landings
 }
 
+
+# Extract statistics from output
+fishery_key$r2_sst_latitude
+summary(fishery_key$r2_sst_latitude)
+quantile(fishery_key$r2_sst_latitude, probs = c(0.5), na.rm=T)
+
 view(fishery_key)
 # Visualize the results
-g1 <- ggplot(fishery_key %>% filter(pval<=0.05), aes(x=fishery_type, y=slope)) +
-  geom_boxplot() +
+g1 <- ggplot(fishery_key %>% filter(pval<=0.05), aes(x=fishery_type, y=slope, fill=fishery_type)) +
+  geom_boxplot(show.legend = F) +
   geom_hline(yintercept = 0) +
+  labs(x="Fishery scale", y="Annual shift in latitude (°N/year)") +
+  scale_fill_manual(values=c("#226462", "#3b89ac" )) +  # "#003851", "#3561af"
   theme_bw()
 g1
 ggsave(g1, filename=file.path(plotdir, "slope_boxplot.png"),
