@@ -59,6 +59,10 @@ fishery_key <- data %>%
          r2_sst_latitude=NA,
          r2_latitude_landings=NA)
 
+# Number of industrial and artisinal fisheries
+table(fishery_key$fishery_type)
+nrow(fishery_key)
+
 view(fishery_key)
 i <- 18
 #landings exceptions - i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 267 || i == 305 || i == 306
@@ -95,13 +99,13 @@ if(i == 17 || i == 62 || i == 101 || i == 112 || i == 127 || i == 153 || i == 18
     left_join(sst, by=c("year", "ecoregion"))
 
 
-   g2 <- ggplot(sdata, aes(x=lat_dd, y=landings_mt)) +
-    geom_line() +
-    geom_smooth(method="lm", color="#226462", fill="#226462", alpha=0.2) +
-    labs(x="Year", y='Latitude (°N)') +
-    theme_bw()
-   g2
-   print(g2)
+   # g2 <- ggplot(sdata, aes(x=lat_dd, y=landings_mt)) +
+   #  geom_line() +
+   #  geom_smooth(method="lm", color="#226462", fill="#226462", alpha=0.2) +
+   #  labs(x="Year", y='Latitude (°N)') +
+   #  theme_bw()
+   # g2
+   # print(g2)
 
   # Fit a linear regression using the lm()
   lmfit1 <- lm(lat_dd~year, sdata)
