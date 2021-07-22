@@ -157,6 +157,7 @@ quantile(fishery_key$r2_sst_latitude, probs = c(0.5), na.rm=T)
 industrial_r2_vals
 
 view(fishery_key)
+
 # Visualize the results
 g1 <- ggplot(fishery_key, aes(x=fishery_type, y=slope, fill=fishery_type)) +
   geom_boxplot(show.legend = F, alpha = 0.7) +
@@ -206,4 +207,53 @@ g5 <- grid.arrange(g1, g2, g3, g4, ncol = 4)
 g5
 ggsave(g5, filename=file.path(plotdir, "the_boxplots.png"),
        units="in", width=16, height=7.5, dpi=600)
+
+# Chris's approach
+#############################
+
+# My theme
+my_theme <- theme(axis.text = element_text(size=6),
+                  axis.title = element_text(size=8))
+
+
+g1 <- ggplot(fishery_key, aes(x=fishery_type, y=slope, fill=fishery_type)) +
+  geom_boxplot(show.legend = F, alpha = 0.7) +
+  geom_hline(yintercept = 0) +
+  labs(x="Fishery Scale", y="Annual Shift in Latitude (°N/year)") +
+  scale_fill_manual(values=c("#3b89ac", "#22646e")) +  # "#003851", "#3561af"
+  theme_bw() + my_theme
+g1
+
+g2 <- ggplot(fishery_key, aes(x=fishery_type, y=r2_sst_latitude, fill=fishery_type)) +
+  geom_boxplot(show.legend = F, alpha = 0.7) +
+  labs(x="Fishery Scale", y=expression(paste("SST vs Weighted Mean Latitude ", R^2))) +
+  geom_hline(yintercept = 0) +
+  scale_fill_manual(values=c("#3b89ac", "#22646e")) +  # "#003851", "#3561af"
+  theme_bw() + my_theme
+g2
+
+g3 <- ggplot(fishery_key, aes(x=fishery_type, y=r2_latitude_landings, fill=fishery_type)) +
+  geom_boxplot(show.legend = F, alpha = 0.7) +
+  labs(x="Fishery Scale", y=expression(paste("Weighted Mean Latitude vs Annual Landings ", R^2))) +
+  geom_hline(yintercept = 0) +
+  scale_fill_manual(values=c("#3b89ac", "#22646e")) +  # "#003851", "#3561af"
+  theme_bw() + my_theme
+g3
+
+g4 <- ggplot(fishery_key, aes(x=fishery_type, y=r2_latitude_value, fill=fishery_type)) +
+  geom_boxplot(show.legend = F, alpha = 0.7) +
+  labs(x="Fishery Scale", y=expression(paste("Weighted Mean Latitude vs Annual Revenue ", R^2))) +
+  geom_hline(yintercept = 0) +
+  scale_fill_manual(values=c("#3b89ac", "#22646e")) +  # "#003851", "#3561af"
+  theme_bw() + my_theme
+g4
+
+
+g5 <- grid.arrange(g1, g2, g3, g4, ncol = 4)
+g5
+
+
+ggsave(g5, filename=file.path(plotdir, "the_boxplots_chris.png"),
+       units="in", width=6.5, height=2.5, dpi=600)
+
 
