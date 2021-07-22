@@ -9,6 +9,7 @@ library(extrafontdb)
 library(plotly)
 font_import()
 loadfonts(device = "win")
+theme_set(theme_bw(base_size = 12))
 
 # Data Import #
 # Directories #
@@ -34,7 +35,8 @@ years <- 2001:2019
 latdata <- data %>%
 filter(year %in% years) %>%
   # Choose Species and Fishery Type #
-filter(sci_name == "Albula sp") %>%
+filter(sci_name == "Sardinops sagax") %>%
+filter(fishery_type == "Industrial") %>%
 
 
 # Calculate
@@ -52,30 +54,28 @@ view(latdata)
 # Generate Graphs #
 g1 <- ggplot(latdata, aes(x = year, y = lat_dd)) +
   geom_line() +
-  geom_smooth(method = "lm") +
+  geom_smooth(method = "lm",  color="#226462", fill="#3b89ac", alpha=0.2) +
   theme(axis.title.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
-  labs(title = "Engraulidae Landings, Revenues, and Latitudes over time.",
-       subtitle = "How do Engraulidae statistics vary over time?",
-       y = "Mean Latitude (°N)")
+    axis.text.y = element_text(angle = 90),
+    text = element_text(size = 12, family = "Calibri")) +
+  labs(y = "Mean Latitude (°N)")
 
 g2 <- ggplot(latdata, aes(x = year, y = landings_mt_tot)) +
 geom_line() +
-  geom_smooth(method = "lm") +
+  #geom_smooth(method = "lm",  color="#226462", fill="#3b89ac", alpha=0.2) +
   theme(axis.title.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
+  axis.text.x = element_blank(),
+  axis.text.y = element_text(angle = 90), text = element_text(size = 12, family = "Calibri")) +
   labs(y = "Volume (Megatons)")
 
 g3 <- ggplot(latdata, aes(x = year, y = value_mxn_tot)) +
 geom_line() +
-  geom_smooth(method = "lm") +
-  theme(axis.text.y = element_text(angle = 90), text = element_text(size = 10, family = "Segoe UI")) +
-  labs(x = "Year", y = "Value (Millions of Pesos)") +
-  scale_x_continuous(breaks=seq(2000, 2020, 5), lim=c(2000, 2020))
+  #geom_smooth(method = "lm",  color="#226462", fill="#3b89ac", alpha=0.2) +
+  theme(axis.text.y = element_text(angle = 90), text = element_text(size = 12, family = "Calibri")) +
+  labs(x = "Year", y = "Value (Millions of Pesos)")
+  #scale_x_continuous(breaks=seq(2000, 2020, 5), lim=c(2000, 2020)) +
 
-grid.arrange(g1, g2, g3, ncol = 1, heights = c(3, 1.5, 1.5))
+g4 <- grid.arrange(g1, g2, g3, ncol = 1, heights = c(1.5, 1, 1))
 
-ggsave(g4, filename=file.path(plotdir, "engraulidae_industrial_up_2.png"),
-       units="in", width=6.5, height=8.0, dpi=600)
+ggsave(g4, filename=file.path(plotdir, "case_study.png"),
+       units="in", width=8, height=6.5, dpi=600)
